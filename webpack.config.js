@@ -1,16 +1,20 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
-const template = require('html-webpack-template');
 const autoprefixer = require('autoprefixer');
 const precss = require('precss');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const template = require('./node_modules/html-webpack-template');
 
 module.exports = {
-  entry: './lib/index.js',
+  devtool: process.env.NODE_ENV !== 'production' && 'eval',
+  entry: (process.env.NODE_ENV !== 'production' ? [
+    'webpack-dev-server/client?http://localhost:8080',
+    'webpack/hot/only-dev-server',
+    'react-hot-loader/patch',
+  ] : []).concat('./lib/index'),
   output: {
-    path: path.join(__dirname, 'build/dist'),
-    filename: '[name]-[hash].js',
-    publicPath: 'dist/',
+    path: path.join(__dirname, 'build'),
+    filename: 'dist/[hash].js',
   },
   module: {
     loaders: [
@@ -26,23 +30,26 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+    }),
     new HtmlWebpackPlugin({
       template,
-      inject: false,
       title: 'Code test',
-      appMountId: 'app',
-      filename: '../index.html',
+      appMountId: 'mount',
+      inject: false,
+      minify: {
+        collapseWhitespace: true,
+      },
     }),
-    new webpack.DefinePlugin({
-      NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
-    }),
-  ],
+  ].concat(
+    process.env.NODE_ENV !== 'production' ? [
+      new webpack.HotModuleReplacementPlugin(),
+    ] : [
+      new webpack.optimize.UglifyJsPlugin(),
+    ]
+  ),
   postcss() {
     return [autoprefixer, precss];
-  },
-  devServer: {
-    proxy: {
-      '/': 'http://localhost:8080/dist/',
-    },
   },
 };

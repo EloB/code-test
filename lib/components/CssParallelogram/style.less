@@ -1,0 +1,24 @@
+.css-parallelogram {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  // Used box-shadow instead becauase border rendering was bugged (chrome)
+  box-shadow: 0 0 0 2px #00f inset;
+  transform-origin: 0 0;
+
+   &.animate-enter {
+    transition: opacity 300ms ease-in;
+    opacity: 0;
+  }
+   &.animate-enter.animate-enter-active {
+    opacity: 1;
+  }
+   &.animate-leave {
+    opacity: 1;
+  }
+   &.animate-leave.animate-leave-active {
+    transition: opacity 300ms ease-in;
+    opacity: 0;
+  }
+}
