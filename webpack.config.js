@@ -38,6 +38,7 @@ module.exports = {
       title: 'Code test',
       appMountId: 'mount',
       inject: false,
+      mobile: true,
       minify: {
         collapseWhitespace: true,
       },
